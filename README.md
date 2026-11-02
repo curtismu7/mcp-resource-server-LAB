@@ -1,4 +1,7 @@
-# mcp-resource-server
+# MCP resource server LAB
+
+Tier: Tool
+Repo: https://github.com/ping-sandbox/mcp-resource-server-LAB
 
 A **banking MCP server** whose tools, data, resources and prompts are
 defined by config files, not code. Switch it to another vertical by
@@ -8,15 +11,14 @@ environment for tokens.
 
 ## Quick start
 
-    cp .env.example .env
+    docker compose up --build -d
 
-Edit `.env`: set `MCP_RESOURCE_SERVER_RESOURCE_URI`, `PINGONE_ENVIRONMENT_ID`
-and `PINGONE_REGION` for your own PingOne environment. Leave `PINGONE_ISSUER`
-commented out until you have real tokens (see "Auth modes").
+It works with no `.env`: the defaults apply and everything runs offline. To use
+your own PingOne environment, `cp .env.example .env` and set
+`MCP_RESOURCE_SERVER_RESOURCE_URI`, `PINGONE_ENVIRONMENT_ID` and `PINGONE_REGION`;
+leave `PINGONE_ISSUER` commented out until you have real tokens (see "Auth modes").
 
-    docker compose up --build
-
-The server listens on `http://localhost:8081`, serving the `banking`
+The port is published on `127.0.0.1:8081` only (loopback), serving the `banking`
 vertical. Its database is `./data/banking.db`, created and seeded at
 startup from `verticals/banking/`; a restart never re-seeds a non-empty
 table, so edits you make to the database stick.
@@ -82,9 +84,9 @@ own seed and fails on one that returns nothing.
 
 ## Kubernetes (Helm)
 
-A chart lives in `helm/mcp-resource-server/`. The image is published by
-GitHub Actions to `ghcr.io/curtismu7/mcp-resource-server` on every push to
-`main` (`latest`, `sha-<short>`) and on `v*` tags.
+A chart lives in `helm/mcp-resource-server/`. No image is published for this
+repo: build it from the `Dockerfile` (`docker build -t mcp-resource-server .`) and
+make it available to your cluster, or set `image.repository` to your own registry path.
 
     helm install mcp helm/mcp-resource-server \
       --set ingress.enabled=true --set ingress.host=mcp.example.com \
@@ -118,8 +120,8 @@ mounted next to the built-in ones:
     helm upgrade mcp helm/mcp-resource-server --reuse-values -f retail-values.yaml --set vertical=retail
 
 The database is an `emptyDir` seeded at startup; set `persistence.enabled=true`
-for a PVC if edits made to the database must survive a restart. While the
-GHCR package is private, create a pull secret and set `imagePullSecrets`.
+for a PVC if edits made to the database must survive a restart. If your
+registry is private, create a pull secret and set `imagePullSecrets`.
 `npm test` renders the chart with `helm template` and checks the manifests
 when helm is installed.
 
@@ -139,8 +141,28 @@ when helm is installed.
 Seeded accounts: `ACC-001` checking, `ACC-002` savings, `ACC-003` money
 market, `ACC-004` credit card; statements for `2026-06` and `2026-07`.
 
+## Run from a clone
+
+Needs Node 26 or newer.
+
+    npm ci
+    npm run build
+    npm run doctor        # preflight: Node version, port, database folder (never prints a setting's value)
+    npm start
+
+A host run binds `127.0.0.1:8081` only. `GET /api/health` answers `demo-health/1`
+(state, runtime `offline`, no detail) for the demo shelf. `npm test` runs the unit tests
+and the repo's own gates.
+
+## What to do if the port is taken
+
+Host run: set `PORT` (for example `PORT=8091 npm start`). Docker: set `HOST_PORT`
+(for example `HOST_PORT=8091 docker compose up --build -d`); the container port stays 8081 and
+only the host side moves. Then use that port in the `curl` checks below.
+
 ## Verify it's running
 
+    curl -s http://localhost:8081/api/health
     curl -s http://localhost:8081/health
     curl -s http://localhost:8081/.well-known/oauth-protected-resource
 

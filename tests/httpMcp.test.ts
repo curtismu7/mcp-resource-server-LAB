@@ -24,6 +24,8 @@ process.env.VERTICAL_DB_PATH = path.join(tmpDir, 'banking.db');
 process.env.MCP_RESOURCE_SERVER_RESOURCE_URI = 'mcp-resource-server.ping.demo';
 process.env.SKIP_TOKEN_SIGNATURE_VALIDATION = 'true';
 process.env.PORT = '0';
+// The default bind must be loopback: HOST unset here, asserted below.
+delete process.env.HOST;
 
 let server: http.Server;
 let base: string;
@@ -68,6 +70,30 @@ async function post(body: unknown, bearer?: string) {
 
 const callTool = (name: string, args: Record<string, unknown> = {}) =>
   ({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: args } });
+
+describe('standalone defaults', () => {
+  it('binds loopback only when HOST is unset', () => {
+    expect((server.address() as AddressInfo).address).toBe('127.0.0.1');
+  });
+
+  it('GET /api/health answers demo-health/1 with no detail', async () => {
+    const res = await fetch(`${base}/api/health`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('cache-control')).toBe('no-store');
+    const j = (await res.json()) as Record<string, any>;
+    expect(j.schema).toBe('demo-health/1');
+    expect(j.state).toBe('ready');
+    expect(j.runtime).toBe('offline');
+    expect(j.demo.id).toBe('mcp-resource-server');
+    expect(Number.isNaN(Date.parse(j.at))).toBe(false);
+    expect(Object.keys(j).sort()).toEqual(['at', 'demo', 'runtime', 'schema', 'state']);
+  });
+
+  it('GET /api/health is GET only', async () => {
+    const res = await fetch(`${base}/api/health`, { method: 'POST' });
+    expect(res.status).toBe(404);
+  });
+});
 
 describe('POST /mcp', () => {
   it('401s without a bearer with RFC 6750 §3.1 WWW-Authenticate', async () => {

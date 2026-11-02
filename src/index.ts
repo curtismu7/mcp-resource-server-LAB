@@ -16,6 +16,7 @@
  * HTTP surfaces (same port):
  *   GET  /.well-known/oauth-protected-resource  — RFC 9728 metadata
  *   GET  /health
+ *   GET  /api/health                            — demo-health/1 (shelf status light)
  *   POST /mcp                                   — MCP JSON-RPC (for PingGateway,
  *                                                 which has no WS listener)
  *
@@ -61,7 +62,9 @@ if (process.env.SKIP_TOKEN_SIGNATURE_VALIDATION === 'true' && process.env.NODE_E
 }
 
 const PORT = parseInt(process.env.PORT || '8081', 10);
-const HOST = process.env.HOST || '0.0.0.0';
+// Loopback by default (standalone rule). The Docker image sets HOST=0.0.0.0 so the container port can be
+// published, and docker-compose.yml publishes it on 127.0.0.1 only.
+const HOST = process.env.HOST || '127.0.0.1';
 // The accepted-audience list may be comma-separated (RFC 8693 rollout). The
 // FIRST entry is this server's canonical resource URI (RFC 9728 metadata,
 // health, logs); the full list feeds aud validation.
@@ -139,6 +142,19 @@ function handleHttp(req: IncomingMessage, res: ServerResponse): void {
     if (asList.length) metadata.authorization_servers = asList;
     res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' });
     res.end(JSON.stringify(metadata, null, 2));
+    return;
+  }
+
+  // demo-health/1: public, GET only, no detail (demo-shelf docs/health-contract.md).
+  if (url === '/api/health' && req.method === 'GET') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    res.end(JSON.stringify({
+      schema: 'demo-health/1',
+      at: new Date().toISOString(),
+      state: 'ready',
+      runtime: 'offline',
+      demo: { id: 'mcp-resource-server', name: 'MCP resource server', version: '1.0.0' },
+    }));
     return;
   }
 

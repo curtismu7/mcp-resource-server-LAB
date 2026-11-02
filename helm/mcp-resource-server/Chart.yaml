@@ -4,9 +4,9 @@ description: Config-driven MCP server (banking by default) over bundled SQLite, 
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
-home: https://github.com/curtismu7/mcp-resource-server
+home: https://github.com/ping-sandbox/mcp-resource-server-LAB
 sources:
-  - https://github.com/curtismu7/mcp-resource-server
+  - https://github.com/ping-sandbox/mcp-resource-server-LAB
 keywords:
   - mcp
   - pingone

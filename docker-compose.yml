@@ -1,6 +1,7 @@
 # Usage:
-#   cp .env.example .env   # fill in your own PingOne env
-#   docker compose up --build
+#   docker compose up --build -d      # works with no .env: the defaults below apply
+#   cp .env.example .env              # optional: your own PingOne environment, vertical, audience
+# The port is published on 127.0.0.1 only. HOST_PORT moves the host side (default 8081).
 services:
   mcp-resource-server:
     build:
@@ -8,12 +9,16 @@ services:
       dockerfile: Dockerfile
     container_name: ${VERTICAL:-banking}-mcp-resource-server
     ports:
-      - "8081:8081"
+      - "127.0.0.1:${HOST_PORT:-8081}:8081"
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       NODE_ENV: production
       VERTICAL: ${VERTICAL:-banking}
+      # Inside the container only; the publish above keeps it reachable from this machine alone.
+      HOST: 0.0.0.0
+      PORT: "8081"
     volumes:
       # SQLite database for the active vertical, seeded at startup from the
       # image's verticals/ dir. Bind mount so data survives a container recreate.

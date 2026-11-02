@@ -1,6 +1,6 @@
 # Config-driven vertical MCP server — design
 
-**Date:** 2026-08-24 · **Repo:** curtismu7/mcp-resource-server · **Status:** approved design, pre-implementation
+**Date:** 2026-08-24 · **Repo:** ping-sandbox/mcp-resource-server-LAB · **Status:** approved design, pre-implementation
 
 ## Goal
 
