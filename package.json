@@ -3,13 +3,18 @@
   "version": "1.0.0",
   "description": "Config-driven MCP server: one vertical (banking by default) defined by verticals/<name>/{vertical.json,schema.sql,seed.json}",
   "main": "dist/index.js",
+  "engines": {
+    "node": ">=26"
+  },
   "scripts": {
     "build": "tsc",
     "build:clean": "rm -rf dist && npm run build",
     "dev": "nodemon --exec \"node --experimental-sqlite -r ts-node/register\" src/index.ts",
     "start": "node --experimental-sqlite dist/index.js",
-    "test": "jest",
-    "typecheck": "tsc --noEmit"
+    "test": "jest && node --test scripts/check-forbidden-strings.test.mjs scripts/doctor.test.mjs scripts/compose.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "doctor": "node scripts/doctor.mjs",
+    "check:forbidden": "node scripts/check-forbidden-strings.mjs"
   },
   "dependencies": {
     "@opentelemetry/auto-instrumentations-node": "^0.59.0",

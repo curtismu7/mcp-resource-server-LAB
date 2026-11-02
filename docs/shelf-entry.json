@@ -1,0 +1,17 @@
+{
+  "demos": [
+    {
+      "id": "mcp-resource-server",
+      "name": "MCP resource server",
+      "catalogId": "D0",
+      "kind": "Tool",
+      "description": "A config-driven MCP resource server: banking and healthcare verticals defined by files, answered from bundled SQLite, token-protected (RFC 9728). Runs offline; loopback only.",
+      "url": "http://localhost:8081",
+      "healthPath": "/api/health",
+      "composeFile": "docker-compose.yml",
+      "composeOverlays": [],
+      "tags": ["mcp", "mcp-server-built", "oauth", "simulated"],
+      "notes": "Host-run: npm start (port 8081). Or: docker compose up --build -d (publishes 127.0.0.1:8081 only). Port taken: HOST_PORT (Docker) or PORT (host run)."
+    }
+  ]
+}

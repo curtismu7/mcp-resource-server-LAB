@@ -1,14 +1,16 @@
 # Default values for mcp-resource-server.
 
 image:
-  repository: ghcr.io/curtismu7/mcp-resource-server
+  # No image is published for this repo: build it from the Dockerfile (docker build -t mcp-resource-server .)
+  # and make it available to your cluster, or set this to your own registry path.
+  repository: mcp-resource-server
   # Defaults to the chart's appVersion.
   tag: ""
   pullPolicy: IfNotPresent
-# Needed only while the GHCR package is private:
-#   kubectl create secret docker-registry ghcr-pull --docker-server=ghcr.io \
+# Needed only when your registry is private:
+#   kubectl create secret docker-registry registry-pull --docker-server=<registry> \
 #     --docker-username=<user> --docker-password=<token>
-# imagePullSecrets: [{ name: ghcr-pull }]
+# imagePullSecrets: [{ name: registry-pull }]
 imagePullSecrets: []
 
 # Which vertical to serve: a folder baked into the image (banking, healthcare)

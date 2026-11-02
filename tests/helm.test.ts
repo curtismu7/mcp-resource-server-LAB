@@ -54,7 +54,7 @@ d('helm chart', () => {
     expect(out).toContain('ingressClassName: nginx-public');
     expect(out).toContain('host: mcp.example.com');
     expect(out).toContain('nginx.ingress.kubernetes.io/proxy-buffering: "off"');
-    expect(out).toContain('image: "ghcr.io/curtismu7/mcp-resource-server:1.0.0"');
+    expect(out).toContain('image: "mcp-resource-server:1.0.0"');
     expect(out).toContain('path: /health');
     expect(out).toContain('cp -R /app/verticals/. /config/verticals/');
     expect(out).not.toContain('kind: PersistentVolumeClaim');

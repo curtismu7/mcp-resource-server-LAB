@@ -1,4 +1,4 @@
-FROM node:22-alpine AS builder
+FROM node:26-alpine AS builder
 
 WORKDIR /app
 
@@ -12,8 +12,10 @@ RUN npm run build
 
 # ── runtime ──────────────────────────────────────────────────────────────────
 ARG GIT_SHA=unknown
-FROM node:22-alpine
+FROM node:26-alpine
 ENV GIT_SHA=$GIT_SHA
+# Listen on all interfaces inside the container; docker-compose.yml publishes only on 127.0.0.1.
+ENV HOST=0.0.0.0
 
 WORKDIR /app
 
