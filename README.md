@@ -1,7 +1,7 @@
 # MCP resource server LAB
 
 Tier: Tool
-Repo: https://github.com/ping-sandbox/mcp-resource-server-LAB
+Repo: https://github.com/curtismu7/mcp-resource-server-LAB
 
 A **banking MCP server** whose tools, data, resources and prompts are
 defined by config files, not code. Switch it to another vertical by
