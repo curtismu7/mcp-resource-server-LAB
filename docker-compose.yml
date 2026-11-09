@@ -19,6 +19,9 @@ services:
       # Inside the container only; the publish above keeps it reachable from this machine alone.
       HOST: 0.0.0.0
       PORT: "8081"
+      # The Host the family lab-proxy sends. This server has no Host or Origin check today (the MCP endpoint is
+      # bearer-token only and sets no cookies), so it answers any Host; the name is declared for the family rule.
+      LAB_ALLOWED_HOSTS: ${LAB_ALLOWED_HOSTS:-mcp-resource-server.local.ping-devops.com}
     volumes:
       # SQLite database for the active vertical, seeded at startup from the
       # image's verticals/ dir. Bind mount so data survives a container recreate.

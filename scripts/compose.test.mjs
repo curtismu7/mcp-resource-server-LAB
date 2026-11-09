@@ -47,3 +47,7 @@ test('every Dockerfile base image is Node 26', () => {
   assert.ok(froms.length >= 2);
   for (const l of froms) assert.match(l, /^FROM node:26-/, l);
 });
+
+test('compose declares LAB_ALLOWED_HOSTS: the one name the family lab-proxy sends, never the bare launcher domain', () => {
+  assert.match(compose, /^ {6}LAB_ALLOWED_HOSTS: \$\{LAB_ALLOWED_HOSTS:-mcp-resource-server\.local\.ping-devops\.com\}$/m);
+});
