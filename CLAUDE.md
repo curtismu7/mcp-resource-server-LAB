@@ -13,7 +13,7 @@ Tier: Tool. A config-driven MCP resource server: tools, data, resources and prom
 - The forbidden-strings gate (`npm run check:forbidden`, CI job `forbidden-strings`, secret `FORBIDDEN_STRINGS`) fails on a string from the owner's list, an unlisted UUID in docs or an unlisted private hostname. Counts only are printed.
 - CI is GitHub-hosted (ubuntu-latest), Node 26 only: build, forbidden-strings, gitleaks. No self-hosted runners, no image publishing from this repo.
 - Docker is OrbStack, never Docker Desktop. The SE k8s mock build is deferred; the Helm chart stays as documentation.
-- Commits end with the Co-Authored-By line from the session's attribution reminder.
+- No AI attribution anywhere (owner, 2026-11-07): no Co-Authored-By trailer and no "Generated with" line in commits, PR bodies or files; CI runs `scripts/check-no-ai-attribution.sh`.
 
 ## Shelf
 `docs/shelf-entry.json` registers this app (tag `mcp-server-built`). Run `scripts/check-drift.sh <this clone>` from the AI-DEMO-Standalone parent before a PR.
