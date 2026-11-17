@@ -224,6 +224,15 @@ This requires that client's app to be authorized for this resource and
 those scopes in PingOne (Applications → your app → Resources) — a
 PingOne-side setup step this server doesn't do for you.
 
+**Static token for a local gateway or inspector (opt-in)** — a trusted local
+caller (a gateway's Static Token mode, or the PingOne MCP Inspector) can send
+one fixed bearer instead of minting tokens. Set
+`MCP_RESOURCE_SERVER_GATEWAY_STATIC_TOKEN` (32+ characters) and
+`MCP_RESOURCE_SERVER_GATEWAY_STATIC_SCOPES` (comma-separated, default none —
+a token without scopes can call no tool). That token skips every JWT check by
+design: it names no user, so keep it long, keep it secret, and keep the
+scope list as narrow as the caller needs.
+
 ## Calling a tool directly (sanity check)
 
 ```bash
