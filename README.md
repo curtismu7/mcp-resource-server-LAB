@@ -23,6 +23,23 @@ vertical. Its database is `./data/banking.db`, created and seeded at
 startup from `verticals/banking/`; a restart never re-seeds a non-empty
 table, so edits you make to the database stick.
 
+## Postman collection
+
+`postman/mcp-resource-server-lab.postman_collection.json` covers the public
+surface (health, RFC 9728 metadata) and the MCP JSON-RPC surface over
+`POST /mcp`: initialize, tools/list, a no-token 401 negative and an
+insufficient-scope negative. A folder pre-request builds a well-formed
+unsigned test JWT (right `aud`, `banking:read` scope) into the
+`SAMPLE_TOKEN` collection variable, so with `STRICT_AUTH=false` (default)
+the collection runs with no setup. With `STRICT_AUTH=true`, set
+`SAMPLE_TOKEN` to a real PingOne-minted token instead.
+
+```
+node ../../shared/postman/generator.mjs --spec postman/spec.json            # regenerate (never hand-edit the output)
+node ../../shared/postman/fill-env.mjs  --spec postman/spec.json            # owner machine: fills postman/mcp-resource-server-lab.live.environment.json from ~/Development/.env (git-ignored)
+npx newman run postman/mcp-resource-server-lab.postman_collection.json -e postman/mcp-resource-server-lab.live.environment.json
+```
+
 ## Switching vertical
 
     VERTICAL=healthcare docker compose up --build
