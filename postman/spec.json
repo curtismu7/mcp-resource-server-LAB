@@ -1,0 +1,145 @@
+{
+  "name": "MCP Resource Server LAB",
+  "slug": "mcp-resource-server-lab",
+  "description": "API collection for MCP Resource Server LAB: the RFC 9728 protected-resource metadata, the MCP JSON-RPC surface over POST /mcp (initialize, tools/list, tools/call) with a bearer token, and the auth negatives (no token, insufficient scope). With STRICT_AUTH=false (default) any well-formed JWT with the right aud and scope works; with STRICT_AUTH=true the token must verify against the configured PingOne issuer.",
+  "baseUrl": "http://localhost:8081",
+  "env": {
+    "PINGONE_ENVIRONMENT_ID": "PingOne environment id (advertised in the protected-resource metadata)",
+    "PINGONE_REGION": "PingOne region code",
+    "MCP_RESOURCE_SERVER_RESOURCE_URI": "The resource URI tokens must carry as aud (default mcp-invest.ping.demo)"
+  },
+  "envOptional": [
+    "MCP_RESOURCE_SERVER_RESOURCE_URI"
+  ],
+  "variables": {
+    "SAMPLE_TOKEN": ""
+  },
+  "folders": [
+    {
+      "name": "Discovery and health",
+      "description": "Public endpoints, no token.",
+      "requests": [
+        {
+          "name": "Health (demo-health/1)",
+          "method": "GET",
+          "path": "/api/health",
+          "tests": [
+            "pm.response.to.have.status(200);",
+            "pm.expect(pm.response.json().state).to.eql('ready');"
+          ]
+        },
+        {
+          "name": "Service health",
+          "method": "GET",
+          "path": "/health",
+          "tests": [
+            "pm.response.to.have.status(200);",
+            "pm.expect(pm.response.json()).to.have.property('resourceUri');"
+          ]
+        },
+        {
+          "name": "Protected-resource metadata (RFC 9728)",
+          "method": "GET",
+          "path": "/.well-known/oauth-protected-resource",
+          "tests": [
+            "pm.response.to.have.status(200);",
+            "const b = pm.response.json(); pm.expect(b).to.have.property('resource'); pm.expect(b.scopes_supported).to.include('banking:read');"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "MCP over HTTP (bearer required)",
+      "description": "JSON-RPC over POST /mcp. Set the SAMPLE_TOKEN collection variable (or the TOKEN environment value) to a JWT whose aud is the resource URI and whose scope covers the tool. RFC 6750: insufficient scope answers 403.",
+      "requests": [
+        {
+          "name": "initialize",
+          "method": "POST",
+          "path": "/mcp",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {
+              "protocolVersion": "2025-06-18",
+              "capabilities": {},
+              "clientInfo": {
+                "name": "postman",
+                "version": "1.0.0"
+              }
+            }
+          },
+          "tests": [
+            "pm.response.to.have.status(200);",
+            "pm.expect(pm.response.json().result.serverInfo).to.have.property('name');"
+          ],
+          "headers": {
+            "Authorization": "Bearer {{SAMPLE_TOKEN}}"
+          }
+        },
+        {
+          "name": "tools/list",
+          "method": "POST",
+          "path": "/mcp",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/list"
+          },
+          "tests": [
+            "pm.response.to.have.status(200);",
+            "pm.expect(pm.response.json().result.tools.length).to.be.above(0);"
+          ],
+          "headers": {
+            "Authorization": "Bearer {{SAMPLE_TOKEN}}"
+          }
+        },
+        {
+          "name": "No token (negative, 401 + WWW-Authenticate)",
+          "method": "POST",
+          "path": "/mcp",
+          "headers": {
+            "Authorization": ""
+          },
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/list"
+          },
+          "tests": [
+            "pm.expect(pm.response.code).to.eql(401);",
+            "pm.expect(pm.response.headers.get('WWW-Authenticate')).to.include('Bearer');"
+          ]
+        },
+        {
+          "name": "Insufficient scope (negative, 403)",
+          "method": "POST",
+          "path": "/mcp",
+          "body": {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {
+              "name": "list_accounts",
+              "arguments": {}
+            }
+          },
+          "tests": [
+            "pm.expect(pm.response.code).to.be.oneOf([403, 401]);"
+          ],
+          "headers": {
+            "Authorization": "Bearer {{INSUFFICIENT_TOKEN}}"
+          }
+        }
+      ],
+      "prerequest": [
+        "const b64 = (o) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');",
+        "const aud = pm.environment.get('MCP_RESOURCE_SERVER_RESOURCE_URI') || 'mcp-invest.ping.demo';",
+        "const tok = b64({alg:'none',typ:'JWT'}) + '.' + b64({sub:'postman-test',scope:'banking:read',aud:aud,exp:Math.floor(Date.now()/1000)+3600}) + '.';",
+        "pm.collectionVariables.set('SAMPLE_TOKEN', tok);",
+        "const low = b64({alg:'none',typ:'JWT'}) + '.' + b64({sub:'postman-test',scope:'banking:none',aud:aud,exp:Math.floor(Date.now()/1000)+3600}) + '.';",
+        "pm.collectionVariables.set('INSUFFICIENT_TOKEN', low);"
+      ]
+    }
+  ]
+}
