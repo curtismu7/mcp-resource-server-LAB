@@ -3,19 +3,19 @@
   "values": [
     {
       "key": "PINGONE_ENVIRONMENT_ID",
-      "value": "PingOne environment id (advertised in the protected-resource metadata)",
+      "value": "",
       "enabled": true,
       "type": "secret"
     },
     {
       "key": "PINGONE_REGION",
-      "value": "PingOne region code",
+      "value": "",
       "enabled": true,
       "type": "secret"
     },
     {
       "key": "MCP_RESOURCE_SERVER_RESOURCE_URI",
-      "value": "The resource URI tokens must carry as aud (default mcp-invest.ping.demo)",
+      "value": "",
       "enabled": true,
       "type": "secret"
     }
