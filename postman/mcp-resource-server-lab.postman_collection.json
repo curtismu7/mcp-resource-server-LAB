@@ -3,7 +3,7 @@
     "name": "MCP Resource Server LAB",
     "description": "API collection for MCP Resource Server LAB: the RFC 9728 protected-resource metadata, the MCP JSON-RPC surface over POST /mcp (initialize, tools/list, tools/call) with a bearer token, and the auth negatives (no token, insufficient scope). With STRICT_AUTH=false (default) any well-formed JWT with the right aud and scope works; with STRICT_AUTH=true the token must verify against the configured PingOne issuer.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "a828df82-c598-4fc3-bca1-7bf7cd869557"
+    "_postman_id": "postman-mcp-resource-server-lab"
   },
   "item": [
     {
