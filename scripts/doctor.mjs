@@ -50,7 +50,7 @@ const host = process.env.HOST || '127.0.0.1';
 if (host === '127.0.0.1' || host === 'localhost' || host === '::1') report('pass', 'bind', 'HOST is loopback');
 else report('warn', 'bind', 'HOST is not loopback: the server is reachable from other machines');
 
-const port = Number(process.env.PORT) || 8081;
+const port = Number(process.env.PORT) || 7844;
 const free = await new Promise((resolve) => {
   const s = net.createServer();
   s.once('error', (e) => resolve(e.code));

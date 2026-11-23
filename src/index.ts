@@ -61,7 +61,7 @@ if (process.env.SKIP_TOKEN_SIGNATURE_VALIDATION === 'true' && process.env.NODE_E
   process.exit(1);
 }
 
-const PORT = parseInt(process.env.PORT || '8081', 10);
+const PORT = parseInt(process.env.PORT || '7844', 10);
 // Loopback by default (standalone rule). The Docker image sets HOST=0.0.0.0 so the container port can be
 // published, and docker-compose.yml publishes it on 127.0.0.1 only.
 const HOST = process.env.HOST || '127.0.0.1';

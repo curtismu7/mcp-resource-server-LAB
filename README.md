@@ -18,7 +18,7 @@ your own PingOne environment, `cp .env.example .env` and set
 `MCP_RESOURCE_SERVER_RESOURCE_URI`, `PINGONE_ENVIRONMENT_ID` and `PINGONE_REGION`;
 leave `PINGONE_ISSUER` commented out until you have real tokens (see "Auth modes").
 
-The port is published on `127.0.0.1:8081` only (loopback), serving the `banking`
+The port is published on `127.0.0.1:7844` only (loopback), serving the `banking`
 vertical. Its database is `./data/banking.db`, created and seeded at
 startup from `verticals/banking/`; a restart never re-seeds a non-empty
 table, so edits you make to the database stick.
@@ -167,21 +167,21 @@ Needs Node 26 or newer.
     npm run doctor        # preflight: Node version, port, database folder (never prints a setting's value)
     npm start
 
-A host run binds `127.0.0.1:8081` only. `GET /api/health` answers `demo-health/1`
+A host run binds `127.0.0.1:7844` only. `GET /api/health` answers `demo-health/1`
 (state, runtime `offline`, no detail) for the demo shelf. `npm test` runs the unit tests
 and the repo's own gates.
 
 ## What to do if the port is taken
 
 Host run: set `PORT` (for example `PORT=8091 npm start`). Docker: set `HOST_PORT`
-(for example `HOST_PORT=8091 docker compose up --build -d`); the container port stays 8081 and
+(for example `HOST_PORT=8091 docker compose up --build -d`); the container port stays 7844 and
 only the host side moves. Then use that port in the `curl` checks below.
 
 ## Verify it's running
 
-    curl -s http://localhost:8081/api/health
-    curl -s http://localhost:8081/health
-    curl -s http://localhost:8081/.well-known/oauth-protected-resource
+    curl -s http://localhost:7844/api/health
+    curl -s http://localhost:7844/health
+    curl -s http://localhost:7844/.well-known/oauth-protected-resource
 
 ## Auth modes
 
@@ -254,7 +254,7 @@ scope list as narrow as the caller needs.
 
 ```bash
 TOKEN="<paste a token from above>"
-curl -s -X POST http://localhost:8081/mcp \
+curl -s -X POST http://localhost:7844/mcp \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"list_accounts","arguments":{}}}'
@@ -263,7 +263,7 @@ curl -s -X POST http://localhost:8081/mcp \
 ## Connecting an MCP client
 
 The server speaks MCP over both WebSocket and HTTP (streamable, `POST /mcp`)
-on the same port — `ws://localhost:8081` or `http://localhost:8081/mcp`.
+on the same port — `ws://localhost:7844` or `http://localhost:7844/mcp`.
 
 **MCP Inspector** (the official dev tool — works with any server and lets
 you set a manual header, so it's the most reliable way to test this one):
@@ -272,7 +272,7 @@ you set a manual header, so it's the most reliable way to test this one):
 npx @modelcontextprotocol/inspector
 ```
 
-Set Transport to "Streamable HTTP", URL to `http://localhost:8081/mcp`, and
+Set Transport to "Streamable HTTP", URL to `http://localhost:7844/mcp`, and
 add an `Authorization: Bearer <token>` header in the Inspector's connection
 settings before connecting.
 
@@ -282,7 +282,7 @@ settings before connecting.
 {
   "mcpServers": {
     "mcp-resource-server": {
-      "url": "http://localhost:8081/mcp",
+      "url": "http://localhost:7844/mcp",
       "transport": "http"
     }
   }

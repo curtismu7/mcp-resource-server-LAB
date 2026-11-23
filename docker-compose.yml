@@ -1,7 +1,7 @@
 # Usage:
 #   docker compose up --build -d      # works with no .env: the defaults below apply
 #   cp .env.example .env              # optional: your own PingOne environment, vertical, audience
-# The port is published on 127.0.0.1 only. HOST_PORT moves the host side (default 8081).
+# The port is published on 127.0.0.1 only. HOST_PORT moves the host side (default 7844).
 services:
   mcp-resource-server:
     build:
@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     container_name: ${VERTICAL:-banking}-mcp-resource-server
     ports:
-      - "127.0.0.1:${HOST_PORT:-8081}:8081"
+      - "127.0.0.1:${HOST_PORT:-7844}:8081"
     env_file:
       - path: .env
         required: false

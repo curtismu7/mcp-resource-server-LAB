@@ -3,7 +3,7 @@
 Tier: Tool. A config-driven MCP resource server: tools, data, resources and prompts come from `verticals/<name>/{vertical.json,schema.sql,seed.json}`, answered from a bundled SQLite database. Repo: https://github.com/ping-sandbox/mcp-resource-server-LAB. Read `README.md` first; the rulebook is `~/Development/STANDALONE-RULES.md` (skill `standalone-demo`).
 
 ## Run and test
-- Needs Node 26 or newer. `npm ci`, `npm run build`, `npm run doctor`, `npm start` (binds `127.0.0.1:8081`). Docker: `docker compose up --build -d` publishes `127.0.0.1:${HOST_PORT:-8081}` only.
+- Needs Node 26 or newer. `npm ci`, `npm run build`, `npm run doctor`, `npm start` (binds `127.0.0.1:7844`). Docker: `docker compose up --build -d` publishes `127.0.0.1:${HOST_PORT:-7844}` only.
 - `npm test` = jest (all verticals' tools, HTTP MCP, helm render) plus `node --test` for the forbidden-strings gate, the doctor and the compose file. `npm run typecheck`. Run suites on the Air (`air-test`), not on this Mac.
 - `GET /api/health` answers `demo-health/1` for the shelf; `GET /health` is the older status.
 
